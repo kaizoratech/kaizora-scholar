@@ -1,6 +1,6 @@
 <template>
   <!-- Strictly Premium Solid Dark Theme Base (No Glassmorphism, 100% Mobile Friendly) -->
-  <div class="min-h-screen flex items-center justify-center bg-[#05050a] text-[#ededef] font-sans antialiased overflow-hidden select-none px-6 py-12 relative font-inter">
+  <div :class="isDarkMode ? 'dark-theme' : 'light-theme'" class="min-h-screen flex items-center justify-center bg-theme-main text-theme-primary font-sans antialiased overflow-hidden select-none px-6 py-12 relative font-inter">
     
     <!-- Muted background layout -->
     <div class="absolute w-[300px] h-[300px] rounded-full bg-purple-650/[0.02] filter blur-[100px] top-[-5%] left-[-5%] pointer-events-none z-0"></div>
@@ -208,6 +208,21 @@ import { useRouter } from 'vue-router';
 import api from '../../api/axios';
 
 const router = useRouter();
+const isDarkMode = ref(localStorage.getItem('kaizora_dark_mode') !== 'false');
+
+const updateDOMTheme = () => {
+  const el = document.documentElement;
+  if (isDarkMode.value) {
+    el.classList.remove('light-theme');
+    el.classList.add('dark-theme');
+    document.body.style.backgroundColor = '#06060c';
+  } else {
+    el.classList.remove('dark-theme');
+    el.classList.add('light-theme');
+    document.body.style.backgroundColor = '#f8fafc';
+  }
+};
+
 const isSyncing = ref(false);
 const showGoogleModal = ref(false);
 const error = ref('');
@@ -353,6 +368,7 @@ const handleCredentialResponse = async (response) => {
 };
 
 onMounted(() => {
+  updateDOMTheme();
   // Load Google Identity Services script dynamically
   const script = document.createElement('script');
   script.src = 'https://accounts.google.com/gsi/client';
@@ -397,5 +413,101 @@ onMounted(() => {
 
 .font-inter {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.light-theme {
+  --bg-main: #f8fafc;
+  --bg-header: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-input: #f8fafc;
+  --bg-active: #f1f5f9;
+  --border-color: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --purple-accent: #6d28d9;
+  --purple-bg: #f5f3ff;
+  --purple-border: #ddd6fe;
+}
+
+.dark-theme {
+  --bg-main: #06060c;
+  --bg-header: #0d0e19;
+  --bg-sidebar: #0d0e19;
+  --bg-card: #0d0e19;
+  --bg-hover: #171827;
+  --bg-input: #06060c;
+  --bg-active: #171a2e;
+  --border-color: #21243f;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --purple-accent: #9333ea;
+  --purple-bg: #151126;
+  --purple-border: #32255c;
+}
+
+.bg-theme-main { background-color: var(--bg-main) !important; }
+.bg-theme-card { background-color: var(--bg-card) !important; }
+.border-theme { border-color: var(--border-color) !important; }
+
+/* Complete Overrides */
+.light-theme [class*="bg-[#05050a]"], 
+.light-theme [class*="bg-[#0c0d16]"], 
+.light-theme [class*="bg-[#101221]"],
+.light-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-card) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.light-theme [class*="bg-[#05050a]"] {
+  background-color: var(--bg-main) !important;
+}
+.light-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-hover) !important;
+}
+
+.dark-theme [class*="bg-[#05050a]"], 
+.dark-theme [class*="bg-[#0c0d16]"], 
+.dark-theme [class*="bg-[#101221]"],
+.dark-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-card) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.dark-theme [class*="bg-[#05050a]"] {
+  background-color: var(--bg-main) !important;
+}
+.dark-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-hover) !important;
+}
+
+.light-theme [class*="border-[#1a1c33]"],
+.light-theme [class*="border-[#1c1e36]"] {
+  border-color: var(--border-color) !important;
+}
+.dark-theme [class*="border-[#1a1c33]"],
+.dark-theme [class*="border-[#1c1e36]"] {
+  border-color: var(--border-color) !important;
+}
+
+.light-theme .text-white,
+.light-theme .text-gray-200,
+.light-theme .text-gray-300,
+.light-theme .text-gray-400 {
+  color: var(--text-primary) !important;
+}
+.light-theme .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+
+/* Eliminate glowing background bubbles */
+.light-theme [class*="bg-purple-650"], .dark-theme [class*="bg-purple-650"] {
+  display: none !important;
+}
+.shadow-2xl {
+  box-shadow: none !important;
 }
 </style>

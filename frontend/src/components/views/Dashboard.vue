@@ -1,6 +1,6 @@
 <template>
   <!-- Immersive Academic Cockpit: Premium Solid Ultra-Dark UI (No Glassmorphism, 100% Mobile Friendly) -->
-  <div class="min-h-screen bg-[#05050a] text-[#e4e4e7] font-sans antialiased flex flex-col md:h-screen md:overflow-hidden relative select-none font-inter">
+  <div :class="isDarkMode ? 'dark-theme' : 'light-theme'" class="min-h-screen bg-theme-main text-theme-primary font-sans antialiased flex flex-col md:h-screen md:overflow-hidden relative select-none font-inter">
     
     <!-- 1. Top Navigation Bar (Ultra-Clean, Solid Dark-Slate, Zero Clutter) -->
     <header class="h-16 border-b border-[#1a1c33] bg-[#0c0d16] flex items-center justify-between px-4 md:px-6 shrink-0 relative z-30">
@@ -57,17 +57,34 @@
         </button>
       </div>
 
-      <!-- Right: Consolidated User Dropdown -->
-      <div class="relative">
+      <!-- Right: Consolidated Theme Toggle & User Dropdown -->
+      <div class="flex items-center gap-3 relative">
+        <!-- Tactile Theme Toggle Button -->
         <button 
-          @click="isUserMenuOpen = !isUserMenuOpen"
-          class="flex items-center gap-2 px-3 py-1.5 bg-[#131526] hover:bg-[#1c1e36] text-white text-[11px] font-bold rounded-lg border border-[#1a1c33] transition-all cursor-pointer font-outfit active:scale-95"
+          @click="toggleTheme" 
+          class="p-2 bg-theme-hover hover:bg-theme-active text-theme-secondary hover:text-theme-primary rounded-lg border border-theme cursor-pointer transition-all duration-100 flex items-center justify-center active:scale-95"
+          title="Toggle Theme (Light / Dark Mode)"
         >
-          <span class="max-w-[100px] truncate hidden sm:inline">{{ studentName }}</span>
-          <svg class="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          <!-- Sun Icon for Light Mode (shown when dark) -->
+          <svg v-if="isDarkMode" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z" />
+          </svg>
+          <!-- Moon Icon for Dark Mode (shown when light) -->
+          <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
           </svg>
         </button>
+
+        <div class="relative">
+          <button 
+            @click="isUserMenuOpen = !isUserMenuOpen"
+            class="flex items-center gap-2 px-3 py-1.5 bg-theme-hover hover:bg-theme-active text-theme-primary text-[11px] font-bold rounded-lg border border-theme transition-all cursor-pointer font-outfit active:scale-95"
+          >
+            <span class="max-w-[100px] truncate hidden sm:inline">{{ studentName }}</span>
+            <svg class="w-3 h-3 text-theme-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
 
         <!-- Dropdown Menu (Solid Opaque, No Glass Blur) -->
         <div 
@@ -127,6 +144,7 @@
             </button>
           </div>
         </div>
+      </div>
       </div>
     </header>
 
@@ -1726,6 +1744,27 @@ import api from '../../api/axios';
 const router = useRouter();
 const userEmail = ref(localStorage.getItem('kaizora_user_email') || '');
 
+const isDarkMode = ref(localStorage.getItem('kaizora_dark_mode') !== 'false');
+
+const updateDOMTheme = () => {
+  const el = document.documentElement;
+  if (isDarkMode.value) {
+    el.classList.remove('light-theme');
+    el.classList.add('dark-theme');
+    document.body.style.backgroundColor = '#06060c';
+  } else {
+    el.classList.remove('dark-theme');
+    el.classList.add('light-theme');
+    document.body.style.backgroundColor = '#f8fafc';
+  }
+};
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+  localStorage.setItem('kaizora_dark_mode', isDarkMode.value);
+  updateDOMTheme();
+};
+
 const courses = ref([]);
 const sessions = ref([]);
 const selectedCourse = ref(null);
@@ -1956,6 +1995,7 @@ const handleUpgradePlan = async (plan) => {
 };
 
 onMounted(() => {
+  updateDOMTheme();
   if (!userEmail.value) {
     router.push({ name: 'Login' });
   } else {
@@ -2769,6 +2809,172 @@ watch(activeTab, (newTab) => {
 <style scoped>
 /* Outfit Google Font for sleek headings */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;650;700;850;900&family=Inter:wght@400;500;600;700&display=swap');
+
+.light-theme {
+  --bg-main: #f8fafc;
+  --bg-header: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-input: #f8fafc;
+  --bg-active: #f1f5f9;
+  --border-color: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --purple-accent: #6d28d9;
+  --purple-bg: #f5f3ff;
+  --purple-border: #ddd6fe;
+}
+
+.dark-theme {
+  --bg-main: #06060c;
+  --bg-header: #0d0e19;
+  --bg-sidebar: #0d0e19;
+  --bg-card: #0d0e19;
+  --bg-hover: #171827;
+  --bg-input: #06060c;
+  --bg-active: #171a2e;
+  --border-color: #21243f;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --purple-accent: #9333ea;
+  --purple-bg: #151126;
+  --purple-border: #32255c;
+}
+
+.bg-theme-main { background-color: var(--bg-main) !important; }
+.bg-theme-header { background-color: var(--bg-header) !important; }
+.bg-theme-sidebar { background-color: var(--bg-sidebar) !important; }
+.bg-theme-card { background-color: var(--bg-card) !important; }
+.bg-theme-hover { background-color: var(--bg-hover) !important; }
+.bg-theme-active { background-color: var(--bg-active) !important; }
+.bg-theme-input { background-color: var(--bg-input) !important; }
+.border-theme { border-color: var(--border-color) !important; }
+.text-theme-primary { color: var(--text-primary) !important; }
+.text-theme-secondary { color: var(--text-secondary) !important; }
+.text-theme-muted { color: var(--text-muted) !important; }
+
+/* Purple Accents */
+.accent-purple { color: var(--purple-accent) !important; }
+.bg-purple-theme { background-color: var(--purple-bg) !important; }
+.border-purple-theme { border-color: var(--purple-border) !important; }
+
+/* Complete Theme Overrides to completely get rid of glassmorphism/glows and implement pure light/dark mode */
+.light-theme, .dark-theme {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Eliminate all hardcoded custom bg/border hashes */
+.light-theme [class*="bg-[#05050a]"], 
+.light-theme [class*="bg-[#0c0d16]"], 
+.light-theme [class*="bg-[#101221]"],
+.light-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-card) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.light-theme [class*="bg-[#05050a]"] {
+  background-color: var(--bg-main) !important;
+}
+.light-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-hover) !important;
+}
+
+.dark-theme [class*="bg-[#05050a]"], 
+.dark-theme [class*="bg-[#0c0d16]"], 
+.dark-theme [class*="bg-[#101221]"],
+.dark-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-card) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.dark-theme [class*="bg-[#05050a]"] {
+  background-color: var(--bg-main) !important;
+}
+.dark-theme [class*="bg-[#131526]"] {
+  background-color: var(--bg-hover) !important;
+}
+
+/* Borders */
+.light-theme [class*="border-[#1a1c33]"],
+.light-theme [class*="border-[#1c1e36]"] {
+  border-color: var(--border-color) !important;
+}
+.dark-theme [class*="border-[#1a1c33]"],
+.dark-theme [class*="border-[#1c1e36]"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Accent overrides */
+.light-theme .text-purple-300,
+.light-theme .text-purple-400 {
+  color: var(--purple-accent) !important;
+}
+.dark-theme .text-purple-300,
+.dark-theme .text-purple-400 {
+  color: var(--purple-accent) !important;
+}
+
+/* Purple BG & Border Overrides */
+.light-theme [class*="bg-purple-950/20"],
+.light-theme [class*="bg-purple-900"] {
+  background-color: var(--purple-bg) !important;
+  color: var(--purple-accent) !important;
+}
+.dark-theme [class*="bg-purple-950/20"],
+.dark-theme [class*="bg-purple-900"] {
+  background-color: var(--purple-bg) !important;
+  color: var(--purple-accent) !important;
+}
+
+.light-theme [class*="border-purple-500/20"],
+.light-theme [class*="border-purple-500/25"],
+.light-theme [class*="border-purple-500/30"] {
+  border-color: var(--purple-border) !important;
+}
+.dark-theme [class*="border-purple-500/20"],
+.dark-theme [class*="border-purple-500/25"],
+.dark-theme [class*="border-purple-500/30"] {
+  border-color: var(--purple-border) !important;
+}
+
+/* Text Overrides for Light Mode */
+.light-theme .text-gray-200,
+.light-theme .text-gray-300,
+.light-theme .text-gray-400,
+.light-theme .text-white {
+  color: var(--text-primary) !important;
+}
+.light-theme .text-gray-500,
+.light-theme .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+.light-theme .text-gray-650 {
+  color: var(--text-muted) !important;
+}
+
+/* Text Overrides for Dark Mode */
+.dark-theme .text-gray-200,
+.dark-theme .text-gray-300 {
+  color: var(--text-secondary) !important;
+}
+.dark-theme .text-white {
+  color: var(--text-primary) !important;
+}
+.dark-theme .text-gray-400,
+.dark-theme .text-gray-500 {
+  color: var(--text-muted) !important;
+}
+
+/* Completely strip out all shadows and glassmorphism glow styles */
+[class*="shadow-purple"], [class*="shadow-lg"], [class*="shadow-2xl"] {
+  box-shadow: none !important;
+}
+[class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+}
 
 .font-outfit {
   font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;

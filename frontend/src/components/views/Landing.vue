@@ -1,6 +1,6 @@
 <template>
   <!-- Pure Dark Purple Cosmic Base (No extra accent colors) -->
-  <div class="min-h-screen bg-[#020205] text-[#ededef] font-sans antialiased overflow-x-hidden relative selection:bg-purple-600/30 selection:text-white">
+  <div :class="isDarkMode ? 'dark-theme' : 'light-theme'" class="min-h-screen bg-theme-main text-theme-primary font-sans antialiased overflow-x-hidden relative selection:bg-purple-600/30 selection:text-white">
     
     <!-- Dense Dark Coordinate Grid -->
     <div class="absolute inset-0 bg-dev-grid pointer-events-none z-0"></div>
@@ -672,6 +672,21 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 
+const isDarkMode = ref(localStorage.getItem('kaizora_dark_mode') !== 'false');
+
+const updateDOMTheme = () => {
+  const el = document.documentElement;
+  if (isDarkMode.value) {
+    el.classList.remove('light-theme');
+    el.classList.add('dark-theme');
+    document.body.style.backgroundColor = '#06060c';
+  } else {
+    el.classList.remove('dark-theme');
+    el.classList.add('light-theme');
+    document.body.style.backgroundColor = '#f8fafc';
+  }
+};
+
 const coursesCount = ref(4);
 const activePlaygroundTab = ref('absensi');
 const isVideoPlaying = ref(false);
@@ -755,6 +770,7 @@ const toggleFaq = (index) => {
 
 // Apple/Supabase style scroll reveal
 onMounted(() => {
+  updateDOMTheme();
   const observerOptions = {
     root: null,
     rootMargin: '0px 0px -10% 0px',
@@ -799,5 +815,118 @@ onMounted(() => {
 .reveal-item.revealed {
   opacity: 1;
   transform: translateY(0);
+}
+
+.light-theme {
+  --bg-main: #f8fafc;
+  --bg-header: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+  --bg-input: #f8fafc;
+  --bg-active: #f1f5f9;
+  --border-color: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --purple-accent: #6d28d9;
+  --purple-bg: #f5f3ff;
+  --purple-border: #ddd6fe;
+}
+
+.dark-theme {
+  --bg-main: #06060c;
+  --bg-header: #0d0e19;
+  --bg-sidebar: #0d0e19;
+  --bg-card: #0d0e19;
+  --bg-hover: #171827;
+  --bg-input: #06060c;
+  --bg-active: #171a2e;
+  --border-color: #21243f;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --purple-accent: #9333ea;
+  --purple-bg: #151126;
+  --purple-border: #32255c;
+}
+
+.bg-theme-main { background-color: var(--bg-main) !important; }
+.bg-theme-card { background-color: var(--bg-card) !important; }
+.border-theme { border-color: var(--border-color) !important; }
+
+/* Overrides for Landing Page Elements */
+.light-theme [class*="bg-[#020205]"],
+.light-theme [class*="bg-[#080913]"],
+.light-theme [class*="bg-[#0d0d18]"],
+.light-theme [class*="bg-[#0c0d1b]"],
+.light-theme [class*="bg-[#05060b]"],
+.light-theme [class*="bg-[#0a0b12]"],
+.light-theme [class*="bg-[#030307]"] {
+  background-color: var(--bg-card) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.light-theme [class*="bg-[#020205]"], .light-theme [class*="bg-[#030307]"] {
+  background-color: var(--bg-main) !important;
+}
+.light-theme [class*="bg-[#0d0e22]"] {
+  background-color: var(--bg-hover) !important;
+}
+
+.dark-theme [class*="bg-[#020205]"],
+.dark-theme [class*="bg-[#080913]"],
+.dark-theme [class*="bg-[#0d0d18]"],
+.dark-theme [class*="bg-[#0c0d1b]"],
+.dark-theme [class*="bg-[#05060b]"],
+.dark-theme [class*="bg-[#0a0b12]"],
+.dark-theme [class*="bg-[#030307]"] {
+  background-color: var(--bg-card) !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+.dark-theme [class*="bg-[#020205]"], .dark-theme [class*="bg-[#030307]"] {
+  background-color: var(--bg-main) !important;
+}
+.dark-theme [class*="bg-[#0d0e22]"] {
+  background-color: var(--bg-hover) !important;
+}
+
+.light-theme [class*="border-[#1b1c2b]"],
+.light-theme [class*="border-[#1d1f35]"] {
+  border-color: var(--border-color) !important;
+}
+.dark-theme [class*="border-[#1b1c2b]"],
+.dark-theme [class*="border-[#1d1f35]"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Light theme colors for text */
+.light-theme .text-white,
+.light-theme .text-gray-200,
+.light-theme .text-gray-300,
+.light-theme .text-gray-400 {
+  color: var(--text-primary) !important;
+}
+.light-theme .text-gray-500 {
+  color: var(--text-secondary) !important;
+}
+.light-theme .bg-gradient-to-r {
+  background-image: none !important;
+  background-clip: unset !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  color: var(--purple-accent) !important;
+}
+
+/* Eliminate glowing background bubbles */
+.light-theme [class*="bg-purple-500"], .dark-theme [class*="bg-purple-500"] {
+  display: none !important;
+}
+.light-theme .bg-gradient-radial-top, .dark-theme .bg-gradient-radial-top {
+  display: none !important;
+}
+.shadow-2xl, .shadow-xl {
+  box-shadow: none !important;
 }
 </style>
