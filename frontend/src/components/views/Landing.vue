@@ -2,21 +2,71 @@
   <!-- Pure Dark Purple Cosmic Base (No extra accent colors) -->
   <div :class="isDarkMode ? 'dark-theme' : 'light-theme'" class="min-h-screen bg-theme-main text-theme-primary font-sans antialiased overflow-x-hidden relative selection:bg-purple-600/30 selection:text-white">
     
-    <!-- Dense Dark Coordinate Grid -->
-    <div class="absolute inset-0 bg-dev-grid pointer-events-none z-0"></div>
+    <!-- Animated SVG Decorations (theme-aware via currentColor) -->
+    <!-- Floating Circles -->
+    <svg class="absolute top-[10%] left-[5%] w-32 h-32 opacity-[0.06] pointer-events-none z-0 animate-float-slow" viewBox="0 0 128 128" fill="none">
+      <circle cx="64" cy="64" r="60" stroke="currentColor" stroke-width="0.5" stroke-dasharray="8 6"/>
+      <circle cx="64" cy="64" r="40" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 8"/>
+      <circle cx="64" cy="64" r="20" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
 
-    <!-- Soft static radial purple glow (0% runtime render overhead, Apple class layout) -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-radial-top pointer-events-none z-0"></div>
-    <div class="absolute top-[25%] left-[-10%] w-[450px] h-[450px] rounded-full bg-purple-500/[0.02] filter blur-[150px] pointer-events-none z-0"></div>
-    <div class="absolute top-[60%] right-[-10%] w-[450px] h-[450px] rounded-full bg-purple-500/[0.01] filter blur-[150px] pointer-events-none z-0"></div>
+    <!-- Floating Hexagon Grid -->
+    <svg class="absolute top-[18%] right-[8%] w-48 h-48 opacity-[0.04] pointer-events-none z-0 animate-float-medium" viewBox="0 0 200 200" fill="none">
+      <polygon points="100,10 170,50 170,130 100,170 30,130 30,50" stroke="currentColor" stroke-width="0.5"/>
+      <polygon points="100,40 145,65 145,115 100,140 55,115 55,65" stroke="currentColor" stroke-width="0.5"/>
+      <polygon points="100,70 120,82 120,106 100,118 80,106 80,82" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
 
-    <!-- Transparent, Borderless, Header with NO navigation links -->
+    <!-- Floating Circuit Lines -->
+    <svg class="absolute bottom-[20%] left-[3%] w-56 h-56 opacity-[0.04] pointer-events-none z-0 animate-float-reverse" viewBox="0 0 240 240" fill="none">
+      <path d="M20 120 H80 L100 100 H160 L180 120 H220" stroke="currentColor" stroke-width="0.5"/>
+      <path d="M20 140 H60 L80 160 H180 L200 140 H220" stroke="currentColor" stroke-width="0.5"/>
+      <circle cx="80" cy="120" r="3" fill="currentColor" opacity="0.3"/>
+      <circle cx="160" cy="120" r="3" fill="currentColor" opacity="0.3"/>
+      <circle cx="80" cy="160" r="3" fill="currentColor" opacity="0.3"/>
+      <circle cx="180" cy="160" r="3" fill="currentColor" opacity="0.3"/>
+    </svg>
+
+    <!-- Floating Data Nodes -->
+    <svg class="absolute bottom-[15%] right-[5%] w-40 h-40 opacity-[0.05] pointer-events-none z-0 animate-float-slow" viewBox="0 0 160 160" fill="none">
+      <circle cx="80" cy="30" r="4" fill="currentColor" opacity="0.4"/>
+      <circle cx="30" cy="130" r="4" fill="currentColor" opacity="0.4"/>
+      <circle cx="130" cy="130" r="4" fill="currentColor" opacity="0.4"/>
+      <line x1="80" y1="30" x2="30" y2="130" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 4"/>
+      <line x1="80" y1="30" x2="130" y2="130" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 4"/>
+      <line x1="30" y1="130" x2="130" y2="130" stroke="currentColor" stroke-width="0.5" stroke-dasharray="4 4"/>
+      <circle cx="80" cy="80" r="2" fill="currentColor" opacity="0.6"/>
+    </svg>
+
+    <!-- Pulsing Dot Grid -->
+    <svg class="absolute top-[45%] left-[12%] w-20 h-20 opacity-[0.06] pointer-events-none z-0" viewBox="0 0 80 80" fill="none">
+      <circle cx="10" cy="10" r="1.5" fill="currentColor" class="animate-pulse"/>
+      <circle cx="30" cy="10" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.3s"/>
+      <circle cx="50" cy="10" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.6s"/>
+      <circle cx="70" cy="10" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.9s"/>
+      <circle cx="10" cy="30" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.2s"/>
+      <circle cx="30" cy="30" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.5s"/>
+      <circle cx="50" cy="30" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.8s"/>
+      <circle cx="70" cy="30" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 1.1s"/>
+      <circle cx="10" cy="50" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.4s"/>
+      <circle cx="30" cy="50" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 0.7s"/>
+      <circle cx="50" cy="50" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 1.0s"/>
+      <circle cx="70" cy="50" r="1.5" fill="currentColor" class="animate-pulse" style="animation-delay: 1.3s"/>
+    </svg>
+
+    <!-- DNA Helix -->
+    <svg class="absolute top-[55%] right-[10%] w-16 h-64 opacity-[0.04] pointer-events-none z-0 animate-float-medium" viewBox="0 0 60 250" fill="none">
+      <path d="M10 10 C30 30, 50 30, 50 50 C50 70, 10 70, 10 90 C10 110, 50 110, 50 130 C50 150, 10 150, 10 170 C10 190, 50 190, 50 210 C50 230, 30 240, 10 240" stroke="currentColor" stroke-width="0.5"/>
+      <path d="M50 10 C30 30, 10 30, 10 50 C10 70, 50 70, 50 90 C50 110, 10 110, 10 130 C10 150, 50 150, 50 170 C50 190, 10 190, 10 210 C10 230, 30 240, 50 240" stroke="currentColor" stroke-width="0.5"/>
+    </svg>
+
+    <!-- Transparent, Borderless, Header -->
     <nav class="sticky top-0 z-50 bg-transparent px-8 py-6">
       <div class="max-w-7xl mx-auto flex items-center justify-between">
         
         <!-- Logo -->
         <div class="flex items-center gap-3 cursor-pointer group" @click="scrollTo('hero')">
-          <div class="w-8.5 h-8.5 rounded-xl bg-purple-600 flex items-center justify-center shadow-lg shadow-purple-600/20 group-hover:scale-105 transition-transform duration-200">
+          <div class="w-8.5 h-8.5 rounded-xl bg-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
             <svg class="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z" />
             </svg>
@@ -26,13 +76,31 @@
           </span>
         </div>
 
-        <!-- Start/Login Button -->
-        <router-link 
-          to="/login"
-          class="px-6 py-2.5 bg-[#0d0d18] hover:bg-purple-600 border border-purple-600/30 hover:border-purple-500 text-[10px] font-black rounded-lg text-white transition-all duration-200 active:scale-95 uppercase tracking-widest"
-        >
-          Masuk Dashboard
-        </router-link>
+        <!-- Right: Theme Toggle + Login -->
+        <div class="flex items-center gap-3">
+          <!-- Theme Toggle Button -->
+          <button 
+            @click="toggleTheme" 
+            class="p-2.5 rounded-lg border transition-all duration-200 cursor-pointer active:scale-95 hover:scale-105"
+            :class="isDarkMode ? 'border-[#1b1c2b] text-gray-400 hover:text-white bg-[#0a0b12]' : 'border-gray-200 text-gray-500 hover:text-gray-800 bg-white'"
+            title="Toggle Theme"
+          >
+            <svg v-if="isDarkMode" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707m12.728 12.728A9 9 0 115.636 5.636a9 9 0 0112.728 12.728z" />
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+
+          <!-- Login Button -->
+          <router-link 
+            to="/login"
+            class="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 border border-purple-600 hover:border-purple-500 text-[10px] font-black rounded-lg text-white transition-all duration-200 active:scale-95 uppercase tracking-widest"
+          >
+            Masuk Dashboard
+          </router-link>
+        </div>
       </div>
     </nav>
 
@@ -679,12 +747,18 @@ const updateDOMTheme = () => {
   if (isDarkMode.value) {
     el.classList.remove('light-theme');
     el.classList.add('dark-theme');
-    document.body.style.backgroundColor = '#06060c';
+    document.body.style.backgroundColor = '#0b0c14';
   } else {
     el.classList.remove('dark-theme');
     el.classList.add('light-theme');
     document.body.style.backgroundColor = '#f8fafc';
   }
+};
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+  localStorage.setItem('kaizora_dark_mode', isDarkMode.value);
+  updateDOMTheme();
 };
 
 const coursesCount = ref(4);
@@ -792,86 +866,79 @@ onMounted(() => {
 </script>
 
 <style>
-/* Pure Dark Purple Unified Aesthetic Styles */
-.bg-gradient-radial-top {
-  background: radial-gradient(ellipse at top, rgba(139, 92, 246, 0.16) 0%, rgba(99, 102, 241, 0.05) 25%, transparent 60%);
-}
-
-.bg-dev-grid {
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.009) 1px, transparent 1px), 
-    linear-gradient(90deg, rgba(255, 255, 255, 0.009) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-/* Apple-style smooth scroll reveal transitions (Hardware accelerated) */
+/* ─── Scroll Reveal ─── */
 .reveal-item {
   opacity: 0;
   transform: translateY(35px);
   transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
-
 .reveal-item.revealed {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* ─── Floating SVG Animations ─── */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(3deg); }
+}
+@keyframes float-medium {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(-2deg); }
+}
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(14px) rotate(2deg); }
+}
+.animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+.animate-float-medium { animation: float-medium 6s ease-in-out infinite; }
+.animate-float-reverse { animation: float-reverse 7s ease-in-out infinite; }
+
+/* ─── Theme Variables ─── */
 .light-theme {
   --bg-main: #f8fafc;
-  --bg-header: #ffffff;
-  --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
   --bg-hover: #f1f5f9;
-  --bg-input: #f8fafc;
-  --bg-active: #f1f5f9;
-  --border-color: #cbd5e1;
+  --border-color: #e8eaf0;
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --purple-accent: #6d28d9;
-  --purple-bg: #f5f3ff;
-  --purple-border: #ddd6fe;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --purple-accent: #7c3aed;
+  --purple-text: #6d28d9;
 }
-
 .dark-theme {
-  --bg-main: #06060c;
-  --bg-header: #0d0e19;
-  --bg-sidebar: #0d0e19;
-  --bg-card: #0d0e19;
-  --bg-hover: #171827;
-  --bg-input: #06060c;
-  --bg-active: #171a2e;
-  --border-color: #21243f;
+  --bg-main: #0b0c14;
+  --bg-card: #10111c;
+  --bg-hover: #161828;
+  --border-color: #1e2040;
   --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
+  --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --purple-accent: #9333ea;
-  --purple-bg: #151126;
-  --purple-border: #32255c;
+  --purple-accent: #a78bfa;
+  --purple-text: #a78bfa;
 }
 
 .bg-theme-main { background-color: var(--bg-main) !important; }
 .bg-theme-card { background-color: var(--bg-card) !important; }
-.border-theme { border-color: var(--border-color) !important; }
+.text-theme-primary { color: var(--text-primary) !important; }
 
-/* Overrides for Landing Page Elements */
+/* ─── Override Hardcoded BGs ─── */
 .light-theme [class*="bg-[#020205]"],
 .light-theme [class*="bg-[#080913]"],
 .light-theme [class*="bg-[#0d0d18]"],
 .light-theme [class*="bg-[#0c0d1b]"],
 .light-theme [class*="bg-[#05060b]"],
 .light-theme [class*="bg-[#0a0b12]"],
-.light-theme [class*="bg-[#030307]"] {
+.light-theme [class*="bg-[#030307]"],
+.light-theme [class*="bg-[#0d0e22]"],
+.light-theme [class*="bg-[#121324]"],
+.light-theme [class*="bg-black"] {
   background-color: var(--bg-card) !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
 }
 .light-theme [class*="bg-[#020205]"], .light-theme [class*="bg-[#030307]"] {
   background-color: var(--bg-main) !important;
-}
-.light-theme [class*="bg-[#0d0e22]"] {
-  background-color: var(--bg-hover) !important;
 }
 
 .dark-theme [class*="bg-[#020205]"],
@@ -880,37 +947,44 @@ onMounted(() => {
 .dark-theme [class*="bg-[#0c0d1b]"],
 .dark-theme [class*="bg-[#05060b]"],
 .dark-theme [class*="bg-[#0a0b12]"],
-.dark-theme [class*="bg-[#030307]"] {
+.dark-theme [class*="bg-[#030307]"],
+.dark-theme [class*="bg-[#0d0e22]"],
+.dark-theme [class*="bg-[#121324]"] {
   background-color: var(--bg-card) !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
 }
 .dark-theme [class*="bg-[#020205]"], .dark-theme [class*="bg-[#030307]"] {
   background-color: var(--bg-main) !important;
 }
-.dark-theme [class*="bg-[#0d0e22]"] {
-  background-color: var(--bg-hover) !important;
-}
 
+/* ─── Override Borders ─── */
 .light-theme [class*="border-[#1b1c2b]"],
-.light-theme [class*="border-[#1d1f35]"] {
+.light-theme [class*="border-[#1d1f35]"],
+.light-theme [class*="border-white/"] {
   border-color: var(--border-color) !important;
 }
 .dark-theme [class*="border-[#1b1c2b]"],
-.dark-theme [class*="border-[#1d1f35]"] {
+.dark-theme [class*="border-[#1d1f35]"],
+.dark-theme [class*="border-white/"] {
   border-color: var(--border-color) !important;
 }
 
-/* Light theme colors for text */
-.light-theme .text-white,
+/* ─── Text Overrides ─── */
+.light-theme .text-white { color: var(--text-primary) !important; }
 .light-theme .text-gray-200,
-.light-theme .text-gray-300,
-.light-theme .text-gray-400 {
-  color: var(--text-primary) !important;
-}
-.light-theme .text-gray-500 {
-  color: var(--text-secondary) !important;
-}
+.light-theme .text-gray-300 { color: var(--text-primary) !important; }
+.light-theme .text-gray-400 { color: var(--text-secondary) !important; }
+.light-theme .text-gray-500 { color: var(--text-muted) !important; }
+
+.light-theme .text-purple-300,
+.light-theme .text-purple-400,
+.light-theme .text-purple-500 { color: var(--purple-text) !important; }
+
+.dark-theme .text-purple-300,
+.dark-theme .text-purple-400,
+.dark-theme .text-purple-500 { color: var(--purple-text) !important; }
+
+/* ─── Gradient Text → Solid Purple in Light Mode ─── */
 .light-theme .bg-gradient-to-r {
   background-image: none !important;
   background-clip: unset !important;
@@ -919,14 +993,8 @@ onMounted(() => {
   color: var(--purple-accent) !important;
 }
 
-/* Eliminate glowing background bubbles */
-.light-theme [class*="bg-purple-500"], .dark-theme [class*="bg-purple-500"] {
-  display: none !important;
-}
-.light-theme .bg-gradient-radial-top, .dark-theme .bg-gradient-radial-top {
-  display: none !important;
-}
-.shadow-2xl, .shadow-xl {
+/* ─── Strip shadows ─── */
+.shadow-2xl, .shadow-xl, .shadow-lg, .shadow-md {
   box-shadow: none !important;
 }
 </style>

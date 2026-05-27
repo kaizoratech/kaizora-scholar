@@ -215,7 +215,7 @@ const updateDOMTheme = () => {
   if (isDarkMode.value) {
     el.classList.remove('light-theme');
     el.classList.add('dark-theme');
-    document.body.style.backgroundColor = '#06060c';
+    document.body.style.backgroundColor = '#0b0c14';
   } else {
     el.classList.remove('dark-theme');
     el.classList.add('light-theme');
@@ -417,97 +417,60 @@ onMounted(() => {
 
 .light-theme {
   --bg-main: #f8fafc;
-  --bg-header: #ffffff;
-  --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
   --bg-hover: #f1f5f9;
-  --bg-input: #f8fafc;
-  --bg-active: #f1f5f9;
-  --border-color: #cbd5e1;
+  --border-color: #e8eaf0;
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --purple-accent: #6d28d9;
-  --purple-bg: #f5f3ff;
-  --purple-border: #ddd6fe;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
 }
-
 .dark-theme {
-  --bg-main: #06060c;
-  --bg-header: #0d0e19;
-  --bg-sidebar: #0d0e19;
-  --bg-card: #0d0e19;
-  --bg-hover: #171827;
-  --bg-input: #06060c;
-  --bg-active: #171a2e;
-  --border-color: #21243f;
+  --bg-main: #0b0c14;
+  --bg-card: #10111c;
+  --bg-hover: #161828;
+  --border-color: #1e2040;
   --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
+  --text-secondary: #94a3b8;
   --text-muted: #64748b;
-  --purple-accent: #9333ea;
-  --purple-bg: #151126;
-  --purple-border: #32255c;
 }
 
 .bg-theme-main { background-color: var(--bg-main) !important; }
-.bg-theme-card { background-color: var(--bg-card) !important; }
-.border-theme { border-color: var(--border-color) !important; }
+.text-theme-primary { color: var(--text-primary) !important; }
 
-/* Complete Overrides */
-.light-theme [class*="bg-[#05050a]"], 
-.light-theme [class*="bg-[#0c0d16]"], 
+.light-theme [class*="bg-[#05050a]"],
+.light-theme [class*="bg-[#0c0d16]"],
 .light-theme [class*="bg-[#101221]"],
 .light-theme [class*="bg-[#131526]"] {
   background-color: var(--bg-card) !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
 }
-.light-theme [class*="bg-[#05050a]"] {
-  background-color: var(--bg-main) !important;
-}
-.light-theme [class*="bg-[#131526]"] {
-  background-color: var(--bg-hover) !important;
-}
+.light-theme [class*="bg-[#05050a]"] { background-color: var(--bg-main) !important; }
+.light-theme [class*="bg-[#131526]"] { background-color: var(--bg-hover) !important; }
 
-.dark-theme [class*="bg-[#05050a]"], 
-.dark-theme [class*="bg-[#0c0d16]"], 
+.dark-theme [class*="bg-[#05050a]"],
+.dark-theme [class*="bg-[#0c0d16]"],
 .dark-theme [class*="bg-[#101221]"],
 .dark-theme [class*="bg-[#131526]"] {
   background-color: var(--bg-card) !important;
   box-shadow: none !important;
-  backdrop-filter: none !important;
 }
-.dark-theme [class*="bg-[#05050a]"] {
-  background-color: var(--bg-main) !important;
-}
-.dark-theme [class*="bg-[#131526]"] {
-  background-color: var(--bg-hover) !important;
-}
+.dark-theme [class*="bg-[#05050a]"] { background-color: var(--bg-main) !important; }
+.dark-theme [class*="bg-[#131526]"] { background-color: var(--bg-hover) !important; }
 
 .light-theme [class*="border-[#1a1c33]"],
-.light-theme [class*="border-[#1c1e36]"] {
-  border-color: var(--border-color) !important;
-}
+.light-theme [class*="border-[#1c1e36]"] { border-color: var(--border-color) !important; }
 .dark-theme [class*="border-[#1a1c33]"],
-.dark-theme [class*="border-[#1c1e36]"] {
-  border-color: var(--border-color) !important;
-}
+.dark-theme [class*="border-[#1c1e36]"] { border-color: var(--border-color) !important; }
 
-.light-theme .text-white,
+.light-theme .text-white { color: var(--text-primary) !important; }
 .light-theme .text-gray-200,
 .light-theme .text-gray-300,
-.light-theme .text-gray-400 {
-  color: var(--text-primary) !important;
-}
-.light-theme .text-gray-500 {
-  color: var(--text-secondary) !important;
-}
+.light-theme .text-gray-400 { color: var(--text-primary) !important; }
+.light-theme .text-gray-500,
+.light-theme .text-gray-600 { color: var(--text-secondary) !important; }
 
-/* Eliminate glowing background bubbles */
 .light-theme [class*="bg-purple-650"], .dark-theme [class*="bg-purple-650"] {
   display: none !important;
 }
-.shadow-2xl {
-  box-shadow: none !important;
-}
+.shadow-2xl, .shadow-md { box-shadow: none !important; }
 </style>
