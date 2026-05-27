@@ -81,8 +81,8 @@
           <!-- Theme Toggle Button -->
           <button 
             @click="toggleTheme" 
-            class="p-2.5 rounded-lg border transition-all duration-200 cursor-pointer active:scale-95 hover:scale-105"
-            :class="isDarkMode ? 'border-[#1b1c2b] text-gray-400 hover:text-white bg-[#0a0b12]' : 'border-gray-200 text-gray-500 hover:text-gray-800 bg-white'"
+            class="p-2.5 rounded-xl border transition-all duration-300 cursor-pointer active:scale-95 hover:scale-105 hover:-translate-y-0.5 flex items-center justify-center"
+            :class="isDarkMode ? 'border-[#1e2040] text-gray-300 hover:text-white bg-[#10111c]' : 'border-gray-200 text-gray-600 hover:text-gray-800 bg-white'"
             title="Toggle Theme"
           >
             <svg v-if="isDarkMode" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -96,7 +96,7 @@
           <!-- Login Button -->
           <router-link 
             to="/login"
-            class="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 border border-purple-600 hover:border-purple-500 text-[10px] font-black rounded-lg text-white transition-all duration-200 active:scale-95 uppercase tracking-widest"
+            class="px-6 py-2.5 bg-purple-600 hover:bg-purple-500 border border-purple-600 hover:border-purple-500 text-[10px] font-black rounded-xl text-white transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 uppercase tracking-widest shadow-md hover:shadow-purple-500/20"
           >
             Masuk Dashboard
           </router-link>
@@ -130,17 +130,18 @@
         <div class="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
           <router-link 
             to="/login"
-            class="w-full sm:w-auto px-10 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-lg text-xs uppercase tracking-widest shadow-lg shadow-purple-600/25 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+            class="w-full sm:w-auto px-10 py-4 bg-purple-600 hover:bg-purple-500 text-white font-black rounded-xl text-xs uppercase tracking-widest transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 shadow-md hover:shadow-purple-500/25"
           >
             <span>Mulai Akses Gratis</span>
-            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+            <svg class="w-3.5 h-3.5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
           </router-link>
           
           <a 
             @click="scrollTo('video')"
-            class="w-full sm:w-auto px-10 py-4 bg-[#0a0b12] hover:bg-[#121324] border border-purple-500/20 text-white font-black rounded-lg text-xs uppercase tracking-widest transition-all duration-200 active:scale-95 flex items-center justify-center cursor-pointer"
+            class="w-full sm:w-auto px-10 py-4 font-black rounded-xl text-xs uppercase tracking-widest transition-all duration-300 hover:scale-[1.03] hover:-translate-y-0.5 active:scale-95 flex items-center justify-center cursor-pointer border"
+            :class="isDarkMode ? 'bg-[#10111c] hover:bg-[#161828] border-[#1e2040] text-gray-300 hover:text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700 hover:text-gray-900'"
           >
             Tonton Video Simulasi
           </a>
@@ -595,7 +596,8 @@
           </div>
           <router-link 
             to="/login"
-            class="w-full py-3.5 mt-8 bg-[#030307] hover:bg-[#121324] text-xs font-bold rounded-lg text-white text-center transition-colors duration-150 uppercase tracking-widest cursor-pointer border border-[#1b1c2b]"
+            class="w-full py-3.5 mt-8 text-xs font-bold rounded-xl text-center transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 uppercase tracking-widest cursor-pointer border flex items-center justify-center"
+            :class="isDarkMode ? 'bg-[#10111c] hover:bg-[#161828] border-[#1e2040] text-gray-300 hover:text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700 hover:text-gray-900'"
           >
             Mulai Percobaan
           </router-link>
@@ -636,7 +638,7 @@
           </div>
           <router-link 
             to="/login"
-            class="w-full py-3.5 mt-8 bg-purple-600 hover:bg-purple-500 text-xs font-bold rounded-lg text-white text-center transition-all duration-150 uppercase tracking-widest cursor-pointer shadow-md shadow-purple-500/10"
+            class="w-full py-3.5 mt-8 bg-purple-600 hover:bg-purple-500 text-xs font-bold rounded-xl text-white text-center transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 uppercase tracking-widest cursor-pointer shadow-md hover:shadow-purple-500/20 flex items-center justify-center"
           >
             Upgrade ke Premium
           </router-link>
@@ -674,7 +676,8 @@
           </div>
           <router-link 
             to="/login"
-            class="w-full py-3.5 mt-8 bg-[#030307] hover:bg-[#121324] text-xs font-bold rounded-lg text-white text-center transition-colors duration-150 uppercase tracking-widest cursor-pointer border border-[#1b1c2b]"
+            class="w-full py-3.5 mt-8 text-xs font-bold rounded-xl text-center transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 uppercase tracking-widest cursor-pointer border flex items-center justify-center"
+            :class="isDarkMode ? 'bg-[#10111c] hover:bg-[#161828] border-[#1e2040] text-gray-300 hover:text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700 hover:text-gray-900'"
           >
             Ambil Paket Elite
           </router-link>
