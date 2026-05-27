@@ -432,63 +432,182 @@ async function generateTaskDraftHandler(req, res) {
             description: cleanDescription
         };
 
-        // Generate draft using official Gemini model (returns { text, tokenCount })
-        const draftResult = await GeminiService.generateTaskDraft(
-            cleanTask,
-            sessionContext,
-            academicDetails,
-            pdfAttachments
-        );
-
-        const draftAnswer = draftResult.text;
-        // Use nullish coalescing (??) instead of || so that tokenCount: 0 is NOT treated as falsy
-        const tokensToConsume = draftResult.tokenCount ?? (pdfAttachments.length > 0 ? 8500 : 4500);
-
-        // ── CRITICAL GUARD: Do NOT deduct tokens if AI generation failed ──
-        // If the AI returned fallback/error text or tokenCount is 0, the user should NOT be charged.
-        const FALLBACK_SIGNATURES = ['Sistem AI sibuk', 'Silakan muat ulang', 'gagal merespons'];
-        const isFailedGeneration = !draftAnswer || tokensToConsume === 0 || 
-            FALLBACK_SIGNATURES.some(sig => draftAnswer.includes(sig));
-
-        if (isFailedGeneration) {
-            console.warn(`[Controller] AI generation returned fallback/error. Tokens NOT deducted. Output: "${(draftAnswer || '').substring(0, 80)}"`);
-            return res.status(503).json({
-                success: false,
-                message: 'Engine AI sedang sibuk atau kuota API harian terlampaui. Token Anda TIDAK dipotong. Silakan coba lagi dalam beberapa menit.',
-                user: {
-                    tokensUsed: user.tokensUsed,
-                    tokensMax: user.tokensMax,
-                    aiTokensPurchased: user.aiTokensPurchased || 0,
-                    packageType: user.packageType
+        // ── WORKFLOW STATE MACHINE ENGINE: FASE INTEROGASI -> AKTIVASI -> EVALUASI ──
+        
+        // Scenario A: User requested to reset the current AI session state
+        if (req.body.reset === true) {
+            console.log(`[Controller] Resetting AI session state for task ${task.id} to idle.`);
+            const resetTask = await TaskRepository.updateTaskAiSession(task.id, {
+                aiSessionState: 'idle',
+                aiContextForm: null,
+                aiSocraticQuestion: null,
+                aiSocraticAnswer: null,
+                aiDraftAnswer: null,
+                status: 'pending'
+            });
+            return res.status(200).json({
+                success: true,
+                phase: 'idle',
+                message: 'Sesi interaktif AI berhasil di-reset.',
+                task: {
+                    id: resetTask.id,
+                    status: resetTask.status,
+                    aiDraftAnswer: resetTask.aiDraftAnswer,
+                    aiSessionState: resetTask.aiSessionState,
+                    aiContextForm: resetTask.aiContextForm,
+                    aiSocraticQuestion: resetTask.aiSocraticQuestion,
+                    aiSocraticAnswer: resetTask.aiSocraticAnswer
                 }
             });
         }
 
-        // Save back using repository (only if generation was successful)
-        const updatedTask = await TaskRepository.updateTaskDraft(task.id, draftAnswer);
+        // Scenario B: First time request - task is idle, transition to interrogation (Form Konteks)
+        if (task.aiSessionState === 'idle' && !req.body.context_form) {
+            const updatedTask = await TaskRepository.updateTaskAiSession(task.id, {
+                aiSessionState: 'interrogation'
+            });
+            return res.status(200).json({
+                success: true,
+                phase: 'interrogation',
+                message: 'Form Konteks Mahasiswa harus diisi untuk mempersonalisasi tugas.',
+                task: {
+                    id: updatedTask.id,
+                    status: updatedTask.status,
+                    aiDraftAnswer: updatedTask.aiDraftAnswer,
+                    aiSessionState: updatedTask.aiSessionState,
+                    aiContextForm: updatedTask.aiContextForm,
+                    aiSocraticQuestion: updatedTask.aiSocraticQuestion,
+                    aiSocraticAnswer: updatedTask.aiSocraticAnswer
+                }
+            });
+        }
 
-        // Deduct tokens and log in a secure database transaction block (Protokol Anti-Cheating & SaaS Enforcement)
-        const sessionNumberMatch = sessionTitle.match(/Sesi\s*(\d+)/i);
-        const sessionNum = sessionNumberMatch ? parseInt(sessionNumberMatch[1]) : 1;
-        const activityType = task.type === 'Diskusi' ? 'DISCUSSION_DRAFT' : 'TASK_DRAFT';
+        // Scenario C: User submitted the Context Form - transition from interrogation to activation (Soal Uji Nalar)
+        if (req.body.context_form) {
+            const contextFormObj = req.body.context_form; // { style, perspective, localExample }
+            console.log(`[Controller] Processing Context Form for task ${task.id}. Generating Socratic question...`);
+            
+            const socraticQuestion = await GeminiService.generateSocraticQuestion(cleanTask, sessionContext, contextFormObj);
+            
+            const updatedTask = await TaskRepository.updateTaskAiSession(task.id, {
+                aiSessionState: 'activation',
+                aiContextForm: JSON.stringify(contextFormObj),
+                aiSocraticQuestion: socraticQuestion
+            });
+            
+            return res.status(200).json({
+                success: true,
+                phase: 'activation',
+                message: 'Soal Uji Nalar berhasil dibuat.',
+                socraticQuestion: socraticQuestion,
+                task: {
+                    id: updatedTask.id,
+                    status: updatedTask.status,
+                    aiDraftAnswer: updatedTask.aiDraftAnswer,
+                    aiSessionState: updatedTask.aiSessionState,
+                    aiContextForm: updatedTask.aiContextForm,
+                    aiSocraticQuestion: updatedTask.aiSocraticQuestion,
+                    aiSocraticAnswer: updatedTask.aiSocraticAnswer
+                }
+            });
+        }
 
-        const updatedUser = await UserRepository.deductTokensWithAudit(
-            user.id,
-            tokensToConsume,
-            activityType,
-            courseName,
-            sessionNum
-        );
+        // Scenario D: User submitted Socratic Answer - transition from activation to evaluated (Humanized Generate)
+        if (req.body.socratic_answer) {
+            const socraticAnswer = req.body.socratic_answer;
+            const contextFormObj = JSON.parse(task.aiContextForm || '{}');
+            const socraticQuestion = task.aiSocraticQuestion || 'Pertanyaan logika materi.';
+            
+            console.log(`[Controller] Generating final humanized output for task ${task.id} using Socratic answer...`);
 
+            const draftResult = await GeminiService.generateHumanizedTaskDraft(
+                cleanTask,
+                sessionContext,
+                academicDetails,
+                pdfAttachments,
+                contextFormObj,
+                socraticQuestion,
+                socraticAnswer
+            );
+
+            const draftAnswer = draftResult.text;
+            const tokensToConsume = draftResult.tokenCount ?? (pdfAttachments.length > 0 ? 8500 : 4500);
+
+            // ── CRITICAL GUARD: Do NOT deduct tokens if AI generation failed ──
+            const FALLBACK_SIGNATURES = ['Sistem AI sibuk', 'Silakan muat ulang', 'gagal merespons'];
+            const isFailedGeneration = !draftAnswer || tokensToConsume === 0 || 
+                FALLBACK_SIGNATURES.some(sig => draftAnswer.includes(sig));
+
+            if (isFailedGeneration) {
+                console.warn(`[Controller] AI generation returned fallback/error. Tokens NOT deducted.`);
+                return res.status(503).json({
+                    success: false,
+                    message: 'Engine AI sedang sibuk atau kuota API terlampaui. Token Anda TIDAK dipotong. Silakan coba lagi.',
+                    user: {
+                        tokensUsed: user.tokensUsed,
+                        tokensMax: user.tokensMax,
+                        aiTokensPurchased: user.aiTokensPurchased || 0,
+                        packageType: user.packageType
+                    }
+                });
+            }
+
+            // Save draft, mark session as 'evaluated', set status to 'drafted'
+            const updatedTask = await TaskRepository.updateTaskAiSession(task.id, {
+                aiSessionState: 'evaluated',
+                aiSocraticAnswer: socraticAnswer,
+                aiDraftAnswer: draftAnswer,
+                status: 'drafted'
+            });
+
+            // Deduct tokens and log in a secure database transaction block
+            const sessionNumberMatch = sessionTitle.match(/Sesi\s*(\d+)/i);
+            const sessionNum = sessionNumberMatch ? parseInt(sessionNumberMatch[1]) : 1;
+            const activityType = task.type === 'Diskusi' ? 'DISCUSSION_DRAFT' : 'TASK_DRAFT';
+
+            const updatedUser = await UserRepository.deductTokensWithAudit(
+                user.id,
+                tokensToConsume,
+                activityType,
+                courseName,
+                sessionNum
+            );
+
+            return res.status(200).json({
+                success: true,
+                phase: 'evaluated',
+                message: 'Draf humanized akademik berhasil dibuat!',
+                task: {
+                    id: updatedTask.id,
+                    status: updatedTask.status,
+                    aiDraftAnswer: updatedTask.aiDraftAnswer,
+                    aiSessionState: updatedTask.aiSessionState,
+                    aiContextForm: updatedTask.aiContextForm,
+                    aiSocraticQuestion: updatedTask.aiSocraticQuestion,
+                    aiSocraticAnswer: updatedTask.aiSocraticAnswer
+                },
+                user: {
+                    tokensUsed: updatedUser.tokensUsed,
+                    tokensMax: updatedUser.tokensMax,
+                    aiTokensPurchased: updatedUser.aiTokensPurchased,
+                    packageType: updatedUser.packageType
+                }
+            });
+        }
+
+        // Scenario E: Standard fallback - return active state representation
         return res.status(200).json({
             success: true,
-            message: 'Draf jawaban AI berhasil dibuat.',
-            task: updatedTask,
-            user: {
-                tokensUsed: updatedUser.tokensUsed,
-                tokensMax: updatedUser.tokensMax,
-                aiTokensPurchased: updatedUser.aiTokensPurchased,
-                packageType: updatedUser.packageType
+            phase: task.aiSessionState,
+            socraticQuestion: task.aiSocraticQuestion,
+            task: {
+                id: task.id,
+                status: task.status,
+                aiDraftAnswer: task.aiDraftAnswer,
+                aiSessionState: task.aiSessionState,
+                aiContextForm: task.aiContextForm,
+                aiSocraticQuestion: task.aiSocraticQuestion,
+                aiSocraticAnswer: task.aiSocraticAnswer
             }
         });
 

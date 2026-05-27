@@ -1161,9 +1161,263 @@
         <div class="absolute inset-0 rounded-full border-4 border-t-purple-500 animate-spin"></div>
       </div>
       <h3 class="text-xs font-black text-white uppercase tracking-wider mb-1 animate-pulse font-outfit">Menyinkronkan Moodle UT...</h3>
-      <p class="text-[9px] text-gray-500 text-center max-w-xs leading-relaxed mb-4 uppercase font-bold tracking-wider font-mono">
+      <p class="text-[9px] text-gray-550 text-center max-w-xs leading-relaxed mb-4 uppercase font-bold tracking-wider font-mono">
         Bypass Moodle aktif. Mohon tunggu proses sinkronisasi hingga tuntas.
       </p>
+    </div>
+
+    <!-- 7B. CONVERSATIONAL KAIZORA AI WORKFLOW MODAL (3-Fase Workflow Blueprint, Premium Dark Theme) -->
+    <div v-if="activeAiSessionTask" class="fixed inset-0 bg-[#05050a]/95 z-55 flex items-center justify-center p-4">
+      <div class="w-full max-w-2xl bg-[#0c0d16] border border-[#1a1c33] rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+        <!-- Header -->
+        <div class="px-6 py-4.5 border-b border-[#1a1c33] flex items-center justify-between shrink-0 bg-[#101221]">
+          <div>
+            <span class="text-[8px] font-black uppercase tracking-widest text-purple-400 bg-[#131526] border border-purple-500/20 px-2.5 py-1 rounded font-mono">
+              HUMANIZED ACADEMIC ARCHITECT
+            </span>
+            <h3 class="text-xs font-black text-white mt-2 leading-snug uppercase tracking-wider font-outfit">
+              {{ activeAiSessionTask.title }}
+            </h3>
+            <p class="text-[9px] text-gray-400 mt-1 uppercase font-bold tracking-wider font-mono">
+              Fase aktif: 
+              <span v-if="activeAiSessionState === 'idle' || activeAiSessionState === 'interrogation'" class="text-purple-400">1. Form Konteks (Interogasi)</span>
+              <span v-else-if="activeAiSessionState === 'activation'" class="text-amber-400">2. Aktivasi Otak (Soal Uji Nalar)</span>
+              <span v-else-if="activeAiSessionState === 'evaluated'" class="text-emerald-400">3. Hasil Draf Akademis Humanized</span>
+            </p>
+          </div>
+          <button @click="closeAiSessionModal" class="text-gray-500 hover:text-white cursor-pointer transition-colors">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 overflow-y-auto flex-1 space-y-5 bg-[#05050a]">
+          <!-- Top Instructions / Socratic Concept Banner -->
+          <div class="p-3.5 bg-[#0c0d16] border border-[#1a1c33] rounded-xl flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-purple-500/10 text-purple-400 shrink-0">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div class="text-[10px] leading-relaxed text-gray-400">
+              <strong class="text-white block uppercase tracking-wide text-[9px] mb-0.5">Sistem Anti-Copas & Humanisasi Akademik</strong>
+              Membantu merakit tulisan orisinal yang merefleksikan karakter dan pemikiran Anda. Masukan data lokal dan logika Anda akan diolah secara murni demi menghindari degradasi kognitif dan 100% lolos deteksi AI.
+            </div>
+          </div>
+
+          <!-- ================= FASE 1: INTEROGASI (FORM) ================= -->
+          <div v-if="activeAiSessionState === 'idle' || activeAiSessionState === 'interrogation'" class="space-y-4">
+            <h4 class="text-[10px] font-black text-white uppercase tracking-widest border-b border-[#1a1c33] pb-1.5 font-outfit">Isi Form Konteks</h4>
+            
+            <!-- 1. Gaya Tulisan -->
+            <div class="space-y-2">
+              <label class="text-[8px] font-black text-gray-400 uppercase tracking-widest font-outfit block">1. Gaya Tulisan yang Diinginkan</label>
+              <div class="grid grid-cols-3 gap-2">
+                <button 
+                  v-for="styleOpt in ['Analitis-Tajam', 'Santai-Mengalir tapi kritis', 'Formal-Akademik']" 
+                  :key="styleOpt"
+                  @click="aiContextForm.style = styleOpt"
+                  type="button"
+                  :class="[
+                    'py-2 px-3 text-[9px] font-bold uppercase tracking-wider rounded-lg border text-center transition-all cursor-pointer font-outfit',
+                    aiContextForm.style === styleOpt 
+                      ? 'bg-[#131526] border-purple-500/30 text-purple-300 shadow-sm'
+                      : 'bg-[#0c0d16] border-[#1a1c33] text-gray-500 hover:text-gray-300'
+                  ]"
+                >
+                  {{ styleOpt }}
+                </button>
+              </div>
+              <input 
+                type="text" 
+                v-model="aiContextForm.style"
+                class="w-full bg-[#0c0d16] border border-[#1a1c33] focus:border-purple-500/25 rounded-lg px-3 py-2 text-[10px] text-gray-300 focus:outline-none placeholder-gray-650"
+                placeholder="Atau tulis gaya tulisan kustom sendiri..."
+              />
+            </div>
+
+            <!-- 2. Sudut Pandang -->
+            <div class="space-y-2">
+              <label class="text-[8px] font-black text-gray-400 uppercase tracking-widest font-outfit block">2. Sudut Pandang Pribadi</label>
+              <textarea 
+                v-model="aiContextForm.perspective"
+                rows="3"
+                class="w-full bg-[#0c0d16] border border-[#1a1c33] focus:border-purple-500/25 rounded-xl p-3 text-[10px] text-gray-300 leading-relaxed focus:outline-none resize-none"
+                placeholder="Apa pendapat, perspektif unik, atau keresahan pribadimu mengenai topik ini? (Contoh: 'Saya rasa kebijakan ini kurang berpihak pada rakyat kecil karena...')"
+              ></textarea>
+            </div>
+
+            <!-- 3. Contoh Nyata / Lokal -->
+            <div class="space-y-2">
+              <label class="text-[8px] font-black text-gray-400 uppercase tracking-widest font-outfit block">3. Contoh Nyata / Lokal di Sekitarmu</label>
+              <textarea 
+                v-model="aiContextForm.localExample"
+                rows="2"
+                class="w-full bg-[#0c0d16] border border-[#1a1c33] focus:border-purple-500/25 rounded-xl p-3 text-[10px] text-gray-300 leading-relaxed focus:outline-none resize-none"
+                placeholder="Sebutkan 1 atau 2 contoh kasus nyata di lingkunganmu atau kejadian aktual untuk dimasukkan sebagai argumen lokal kuat."
+              ></textarea>
+            </div>
+
+            <!-- Submit Form -->
+            <button 
+              @click="submitContextForm"
+              :disabled="isProcessingWorkflow || !aiContextForm.style || !aiContextForm.perspective"
+              class="w-full text-center py-2.5 px-4 bg-purple-950/20 hover:bg-purple-900/25 border border-purple-500/25 text-purple-300 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all duration-100 active:scale-98 cursor-pointer flex items-center justify-center gap-2 font-outfit disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="isProcessingWorkflow" class="w-3.5 h-3.5 rounded-full border-2 border-purple-300/20 border-t-purple-300 animate-spin"></span>
+              <span>{{ isProcessingWorkflow ? 'Menganalisis Konteks...' : 'Lanjut ke Aktivasi Otak (Uji Nalar)' }}</span>
+            </button>
+          </div>
+
+          <!-- ================= FASE 2: AKTIVASI OTAK (SOAL UJI NALAR) ================= -->
+          <div v-else-if="activeAiSessionState === 'activation'" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-[#1a1c33] pb-1.5">
+              <h4 class="text-[10px] font-black text-white uppercase tracking-widest font-outfit">Socratic Brain Activation</h4>
+              <button 
+                @click="resetAiWorkflow"
+                class="text-[7.5px] font-black text-rose-400 hover:text-rose-300 uppercase tracking-widest font-outfit bg-rose-950/10 px-2 py-1 border border-rose-500/10 rounded cursor-pointer"
+              >
+                Reset & Isi Ulang Form
+              </button>
+            </div>
+            
+            <p class="text-[10px] leading-relaxed text-purple-300 font-outfit">
+              Hebat! Konteks personalmu berhasil diserap. Sebelum draf tulisan di-generate, silakan selesaikan tantangan logika 1 soal berikut demi memperkuat argumen tugasmu:
+            </p>
+
+            <!-- The Question Box -->
+            <div class="bg-[#0c0d16] border border-[#1a1c33] p-4.5 rounded-xl space-y-1">
+              <span class="text-[8px] font-black text-amber-500 uppercase tracking-widest font-mono">Soal Uji Nalar:</span>
+              <p class="text-xs text-white leading-relaxed font-bold font-outfit whitespace-pre-line select-text">
+                {{ activeAiSocraticQuestion }}
+              </p>
+            </div>
+
+            <!-- Answer Input -->
+            <div class="space-y-2">
+              <label class="text-[8px] font-black text-gray-400 uppercase tracking-widest font-outfit block">Jawaban / Argumen Singkat Anda</label>
+              <textarea 
+                v-model="aiSocraticAnswer"
+                rows="4"
+                class="w-full bg-[#0c0d16] border border-[#1a1c33] focus:border-purple-500/25 rounded-xl p-3.5 text-[10px] text-gray-255 leading-relaxed focus:outline-none resize-none font-sans"
+                placeholder="Ketikkan argumen logis singkat Anda di sini sesuai pemahaman/pendapat orisinal Anda..."
+              ></textarea>
+            </div>
+
+            <!-- Generate Draft Button -->
+            <button 
+              @click="submitSocraticAnswer"
+              :disabled="isProcessingWorkflow || !aiSocraticAnswer.trim()"
+              class="w-full text-center py-2.5 px-4 bg-emerald-950/20 hover:bg-emerald-900/25 border border-emerald-500/25 text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-xl transition-all duration-100 active:scale-98 cursor-pointer flex items-center justify-center gap-2 font-outfit disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span v-if="isProcessingWorkflow" class="w-3.5 h-3.5 rounded-full border-2 border-emerald-300/20 border-t-emerald-300 animate-spin"></span>
+              <span>{{ isProcessingWorkflow ? 'Mengevaluasi & Menulis Draf...' : 'Konfirmasi & Generate Draf Akademis Humanized' }}</span>
+            </button>
+          </div>
+
+          <!-- ================= FASE 3: HASIL DRAF (PREVIEW & CONSOLE) ================= -->
+          <div v-else-if="activeAiSessionState === 'evaluated'" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-[#1a1c33] pb-1.5">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h4 class="text-[10px] font-black text-white uppercase tracking-widest font-outfit">Hasil Draf Akademis Humanized</h4>
+              </div>
+              <button 
+                @click="resetAiWorkflow"
+                class="text-[7.5px] font-black text-rose-400 hover:text-rose-300 uppercase tracking-widest font-outfit bg-rose-950/10 px-2.5 py-1 border border-rose-500/10 rounded cursor-pointer transition-all duration-100 active:scale-95"
+              >
+                Reset & Tulis Ulang Dari Awal
+              </button>
+            </div>
+
+            <p class="text-[9.5px] text-gray-400 leading-normal">
+              Draf berhasil digenerate menggunakan kosakata alami manusia, ritme acak (burstiness), dan telah disuntikkan argumen lokal Anda secara murni. Lolos deteksi AI dan berbobot akademis!
+            </p>
+
+            <div class="bg-[#0c0d16] rounded-xl p-3 border border-[#1a1c33] mt-1 space-y-2">
+              <div class="flex items-center justify-between mb-1 border-b border-[#1a1c33] pb-2">
+                <span class="text-[8px] font-black text-purple-300 uppercase tracking-widest font-outfit">Asisten Draf Akademik AI</span>
+                <div class="flex items-center gap-2 font-mono">
+                  <button 
+                    v-if="activeAiSessionTask.type === 'Tugas'"
+                    @click="downloadDraftAsPDF(activeAiSessionTask)"
+                    class="text-[8px] text-emerald-400 hover:text-emerald-300 font-bold uppercase tracking-widest cursor-pointer hover:underline font-outfit"
+                  >
+                    Cetak PDF
+                  </button>
+                  <button 
+                    @click="copyText(activeAiSessionTask.ai_draft_answer)"
+                    class="text-[8px] text-gray-400 hover:text-white font-bold uppercase tracking-widest cursor-pointer hover:underline font-outfit"
+                  >
+                    Salin
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Tab Toggler -->
+              <div class="flex items-center gap-1 bg-[#05050a] p-1 border border-[#1a1c33] rounded-lg self-start mb-2 w-max">
+                <button 
+                  @click="activeWorkflowTab = 'edit'"
+                  :class="[
+                    'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-md cursor-pointer transition-all duration-100 font-outfit border border-transparent',
+                    activeWorkflowTab === 'edit' ? 'bg-[#131526] text-purple-300 border-[#1a1c33]' : 'text-gray-500 hover:text-gray-300'
+                  ]"
+                >
+                  Tulis (Editor)
+                </button>
+                <button 
+                  @click="activeWorkflowTab = 'preview'"
+                  :class="[
+                    'px-3 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-md cursor-pointer transition-all duration-100 font-outfit border border-transparent',
+                    activeWorkflowTab === 'preview' ? 'bg-[#131526] text-purple-300 border-[#1a1c33]' : 'text-gray-500 hover:text-gray-300'
+                  ]"
+                >
+                  Pratinjau (Visual)
+                </button>
+              </div>
+
+              <!-- Textarea Editor -->
+              <textarea
+                v-if="activeWorkflowTab === 'edit'"
+                v-model="activeAiSessionTask.ai_draft_answer"
+                rows="14"
+                class="w-full bg-[#05050a] border border-[#1a1c33] focus:border-purple-500/20 rounded-xl p-4 text-[10.5px] text-gray-300 leading-relaxed focus:outline-none resize-y min-h-[300px] font-mono"
+                placeholder="Edit draf jawaban akademik Anda di sini..."
+              ></textarea>
+              <div 
+                v-else
+                v-html="renderDraftPreviewHtml(activeAiSessionTask.ai_draft_answer)"
+                class="w-full bg-[#05050a] border border-[#1a1c33] rounded-xl p-4 text-[10.5px] text-gray-250 leading-relaxed min-h-[300px] max-h-[450px] overflow-y-auto select-text preview-content"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-[#1a1c33] bg-[#0c0d16] flex items-center justify-between shrink-0">
+          <div class="text-[8px] text-gray-500 font-mono font-bold uppercase tracking-wider">
+            <span v-if="activeAiSessionState === 'evaluated'">Karakter: {{ activeAiSessionTask.ai_draft_answer ? activeAiSessionTask.ai_draft_answer.length : 0 }}</span>
+            <span v-else>PARETO-KAIZORA AI WORKFLOW SYSTEM</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button 
+              @click="closeAiSessionModal"
+              class="px-4 py-2 bg-[#131526] text-gray-400 hover:text-white font-black text-[10px] uppercase tracking-wider rounded-xl cursor-pointer transition-all duration-100 active:scale-95 border border-[#1a1c33] font-outfit"
+            >
+              {{ activeAiSessionState === 'evaluated' ? 'Selesai' : 'Tutup' }}
+            </button>
+            <button 
+              v-if="activeAiSessionState === 'evaluated' && activeAiSessionTask.type === 'Diskusi'"
+              @click="triggerDiscussionFromWorkflow"
+              class="px-5 py-2 bg-emerald-950/20 hover:bg-emerald-900/20 border border-emerald-500/20 text-emerald-400 font-black text-[10px] uppercase tracking-widest rounded-xl cursor-pointer flex items-center gap-2 transition-all duration-100 active:scale-95 shadow-sm font-outfit"
+            >
+              Kirim ke Moodle
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- 8. PREMIUM PRICING UPGRADE MODAL (Solid Opaque, Zero Glass) -->
@@ -1492,6 +1746,15 @@ const activeDiscussionSession = ref(null);
 const discussionReplyText = ref('');
 const isSubmittingDiscussion = ref(false);
 const isRegeneratingDraft = ref(false);
+
+// Conversational Socratic 3-Fase Workflow Blueprint variables
+const activeAiSessionTask = ref(null);
+const activeAiSessionState = ref('idle');
+const aiContextForm = ref({ style: 'Analitis-Tajam', perspective: '', localExample: '' });
+const activeAiSocraticQuestion = ref('');
+const aiSocraticAnswer = ref('');
+const isProcessingWorkflow = ref(false);
+const activeWorkflowTab = ref('edit');
 
 // Monospace Markdown/ASCII & HTML Table Preview System
 const activeDraftTabs = ref({}); // { [taskId]: 'edit' | 'preview' }
@@ -2227,8 +2490,29 @@ const generateDraft = async (task) => {
       }
     });
     if (res.data.success) {
+      // Sync local task copy from the backend response
+      task.ai_session_state = res.data.phase;
+      task.ai_socratic_question = res.data.socraticQuestion || res.data.task.aiSocraticQuestion;
+      task.ai_socratic_answer = res.data.task.aiSocraticAnswer;
       task.ai_draft_answer = res.data.task.aiDraftAnswer;
-      task.status = 'drafted';
+      task.ai_context_form = res.data.task.aiContextForm;
+
+      // Populate interactive Vue reactive states
+      activeAiSessionTask.value = task;
+      activeAiSessionState.value = res.data.phase;
+      activeAiSocraticQuestion.value = task.ai_socratic_question || '';
+      aiSocraticAnswer.value = task.ai_socratic_answer || '';
+      
+      if (task.ai_context_form) {
+        try {
+          aiContextForm.value = JSON.parse(task.ai_context_form);
+        } catch (e) {
+          aiContextForm.value = { style: 'Analitis-Tajam', perspective: '', localExample: '' };
+        }
+      } else {
+        aiContextForm.value = { style: 'Analitis-Tajam', perspective: '', localExample: '' };
+      }
+
       if (res.data.user) {
         tokensUsed.value = res.data.user.tokensUsed;
         tokensMax.value = res.data.user.tokensMax;
@@ -2237,12 +2521,125 @@ const generateDraft = async (task) => {
       }
     }
   } catch (err) {
-    console.error('Error drafting task:', err);
-    const msg = err.response?.data?.message || 'Batas kuota rate limit atau Engine sibuk. Gagal generate.';
-    alert(msg);
+    console.error('Error initiating AI session:', err);
+    alert(err.response?.data?.message || 'Batas kuota rate limit atau Engine sibuk. Gagal memuat sesi AI.');
   } finally {
     draftingTasks.value[task.id] = false;
   }
+};
+
+const closeAiSessionModal = () => {
+  activeAiSessionTask.value = null;
+};
+
+const submitContextForm = async () => {
+  if (!activeAiSessionTask.value) return;
+  isProcessingWorkflow.value = true;
+  try {
+    const res = await api.post('/ai/generate-task', {
+      task_id: activeAiSessionTask.value.id,
+      context_form: aiContextForm.value,
+      academic_details: {
+        name: studentName.value,
+        nim: studentNIM.value,
+        prodi: studentProdi.value
+      }
+    });
+    if (res.data.success) {
+      activeAiSessionState.value = res.data.phase; // should be 'activation'
+      activeAiSocraticQuestion.value = res.data.socraticQuestion;
+      
+      // Update local task properties
+      activeAiSessionTask.value.ai_session_state = res.data.phase;
+      activeAiSessionTask.value.ai_socratic_question = res.data.socraticQuestion;
+      activeAiSessionTask.value.ai_context_form = JSON.stringify(aiContextForm.value);
+    }
+  } catch (err) {
+    console.error('Error submitting context form:', err);
+    alert(err.response?.data?.message || 'Gagal memproses form konteks. Silakan coba lagi.');
+  } finally {
+    isProcessingWorkflow.value = false;
+  }
+};
+
+const submitSocraticAnswer = async () => {
+  if (!activeAiSessionTask.value || !aiSocraticAnswer.value.trim()) return;
+  isProcessingWorkflow.value = true;
+  try {
+    const res = await api.post('/ai/generate-task', {
+      task_id: activeAiSessionTask.value.id,
+      socratic_answer: aiSocraticAnswer.value,
+      academic_details: {
+        name: studentName.value,
+        nim: studentNIM.value,
+        prodi: studentProdi.value
+      }
+    });
+    if (res.data.success) {
+      activeAiSessionState.value = res.data.phase; // should be 'evaluated'
+      
+      // Update local task properties
+      activeAiSessionTask.value.ai_session_state = res.data.phase;
+      activeAiSessionTask.value.ai_socratic_answer = aiSocraticAnswer.value;
+      activeAiSessionTask.value.ai_draft_answer = res.data.task.aiDraftAnswer;
+      activeAiSessionTask.value.status = 'drafted';
+
+      if (res.data.user) {
+        tokensUsed.value = res.data.user.tokensUsed;
+        tokensMax.value = res.data.user.tokensMax;
+        packageType.value = res.data.user.packageType;
+        aiTokensPurchased.value = res.data.user.aiTokensPurchased || 0;
+      }
+    }
+  } catch (err) {
+    console.error('Error generating final humanized draft:', err);
+    alert(err.response?.data?.message || 'Gagal memproses draf humanized. Silakan coba lagi.');
+  } finally {
+    isProcessingWorkflow.value = false;
+  }
+};
+
+const resetAiWorkflow = async () => {
+  if (!activeAiSessionTask.value) return;
+  if (!confirm('Apakah Anda yakin ingin me-reset seluruh progres sesi interaktif AI ini? Anda harus mengisi form dari awal.')) return;
+  
+  isProcessingWorkflow.value = true;
+  try {
+    const res = await api.post('/ai/generate-task', {
+      task_id: activeAiSessionTask.value.id,
+      reset: true
+    });
+    if (res.data.success) {
+      activeAiSessionState.value = 'interrogation';
+      activeAiSocraticQuestion.value = '';
+      aiSocraticAnswer.value = '';
+      aiContextForm.value = { style: 'Analitis-Tajam', perspective: '', localExample: '' };
+      
+      // Update local task copy
+      activeAiSessionTask.value.ai_session_state = 'interrogation';
+      activeAiSessionTask.value.ai_socratic_question = null;
+      activeAiSessionTask.value.ai_socratic_answer = null;
+      activeAiSessionTask.value.ai_draft_answer = null;
+      activeAiSessionTask.value.status = 'pending';
+    }
+  } catch (err) {
+    console.error('Error resetting workflow:', err);
+    alert('Gagal me-reset sesi AI.');
+  } finally {
+    isProcessingWorkflow.value = false;
+  }
+};
+
+const triggerDiscussionFromWorkflow = () => {
+  if (!activeAiSessionTask.value) return;
+  // Copy active workflow variables to activeDiscussionTask for the submit modal
+  activeDiscussionTask.value = activeAiSessionTask.value;
+  activeDiscussionSession.value = sessions.value[selectedSessionIndex.value];
+  discussionReplyText.value = activeAiSessionTask.value.ai_draft_answer;
+  activeModalTab.value = 'edit';
+  
+  // Close workflow modal
+  closeAiSessionModal();
 };
 
 const copyText = (text) => {

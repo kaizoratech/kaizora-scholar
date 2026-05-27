@@ -100,6 +100,25 @@ class TaskRepository {
             .returning();
         return result[0];
     }
+
+    /**
+     * Update AI conversational session attributes of a task.
+     */
+    static async updateTaskAiSession(taskId, updates) {
+        const setPayload = {};
+        if (updates.aiSessionState !== undefined) setPayload.aiSessionState = updates.aiSessionState;
+        if (updates.aiContextForm !== undefined) setPayload.aiContextForm = updates.aiContextForm;
+        if (updates.aiSocraticQuestion !== undefined) setPayload.aiSocraticQuestion = updates.aiSocraticQuestion;
+        if (updates.aiSocraticAnswer !== undefined) setPayload.aiSocraticAnswer = updates.aiSocraticAnswer;
+        if (updates.aiDraftAnswer !== undefined) setPayload.aiDraftAnswer = updates.aiDraftAnswer;
+        if (updates.status !== undefined) setPayload.status = updates.status;
+
+        const result = await db.update(tasks)
+            .set(setPayload)
+            .where(eq(tasks.id, taskId))
+            .returning();
+        return result[0];
+    }
 }
 
 module.exports = TaskRepository;

@@ -318,6 +318,173 @@ ${task.description || task.title}
             return { text: fallbackText, tokenCount: 0 };
         }
     }
+
+    /**
+     * FASE 2: AKTIVASI OTAK (Generate 1 Socratic Question based on task context and user form context)
+     */
+    static async generateSocraticQuestion(task, sessionContext, contextForm) {
+        const currentApiKey = getApiKey();
+        if (!currentApiKey) return 'Sistem AI sibuk. Gagal membuat soal uji nalar.';
+
+        const prompt = `
+System Instruction: [SOAL UJI NALAR GENERATOR]
+Kamu adalah asisten dosen Universitas Terbuka yang cerdas dan kritis. 
+Tugasmu adalah membuat TEPAT SATU (1) pertanyaan pemicu argumen (Socratic Question) berbasis studi kasus/logika berdasarkan instruksi tugas kuliah dan masukan dari form konteks mahasiswa.
+
+Tujuan:
+Memastikan mahasiswa memahami materi dasar dan memicu logika orisinal mereka untuk kita serap ke dalam tulisan tugas nantinya. Pertanyaan tidak boleh berbentuk pilihan ganda, melainkan pertanyaan reflektif yang memerlukan jawaban logis/argumen singkat.
+
+Format Keluaran:
+Kembalikan TEPAT SATU pertanyaan langsung tanpa basa-basi pembuka (jangan ada kalimat pembuka seperti "Tentu, ini soal uji nalar Anda:" atau "Berikut adalah pertanyaannya:"). Tulis langsung pertanyaannya secara padat, tajam, dan relevan dengan materi kuliah dan konteks mahasiswa.
+
+Konteks Sesi Kuliah & Instruksi Tugas:
+${sessionContext}
+Deskripsi Tugas: ${task.description || task.title}
+
+Form Konteks Mahasiswa:
+- Gaya Tulisan yang Diinginkan: ${contextForm.style || 'Analitis-Tajam'}
+- Sudut Pandang/Keresahan Pribadi: ${contextForm.perspective || 'Tidak ada'}
+- Contoh Nyata/Lokal Sekitar: ${contextForm.localExample || 'Tidak ada'}
+`.trim();
+
+        try {
+            const res = await generateWithModelFallback(prompt, { temperature: 0.7 });
+            return res.text || 'Gagal membuat soal uji nalar. Silakan coba lagi.';
+        } catch (err) {
+            console.error('[Gemini Service] generateSocraticQuestion failed:', err.message);
+            return 'Gagal membuat soal uji nalar. Silakan coba lagi.';
+        }
+    }
+
+    /**
+     * FASE 3: EVALUASI & GENERATE (HUMANIZED OUTPUT RULES)
+     */
+    static async generateHumanizedTaskDraft(task, sessionContext, academicDetails, pdfAttachments = [], contextForm, socraticQuestion, socraticAnswer) {
+        const currentApiKey = getApiKey();
+        if (!currentApiKey) return { text: 'Sistem AI sibuk. Gagal membuat draf tugas.', tokenCount: 0 };
+
+        const isTugas = task.type === 'Tugas';
+        
+        const name = (academicDetails.name || 'Fadjar Setiawan').replace(/^\d+\s+/, '').trim();
+        const nim = academicDetails.nim || '054308893';
+        const prodi = academicDetails.prodi || 'Sistem Informasi';
+
+        let taskNum = '1';
+        const numMatch = task.title.match(/tugas\s*[.\-_]?\s*(\d+)/i);
+        if (numMatch) {
+            taskNum = numMatch[1];
+        }
+        
+        let courseName = '';
+        const courseMatch = sessionContext.match(/Mata Kuliah:\s*(.*?)(?:\n|$)/i);
+        if (courseMatch) {
+            courseName = courseMatch[1].trim();
+        }
+
+        const title = isTugas ? `Tugas ${taskNum} - ${courseName || 'Belajar di Era Digital'}` : (task.title || 'Tugas');
+
+        const systemInstruction = `
+[SYSTEM INSTRUCTION: HUMANIZED ACADEMIC ARCHITECT]
+
+Kamu adalah mahasiswa aktif Universitas Terbuka yang sangat cerdas, kritis, dan memiliki gaya penulisan orisinal manusia.
+Tugas: Buat draf lembar jawaban tugas atau balasan diskusi kuliah yang sangat berbobot, orisinal, dan 100% lolos deteksi AI.
+
+=======================================================
+PROSES GENERATE - ATURAN PENULISAN ALAMI MANUSIA (WAJIB DIPATUHI):
+=======================================================
+1. **Suntikkan Data Murni Mahasiswa**:
+   Integrasikan secara mendalam sudut pandang personal, contoh lokal, dan argumen sensitivitas harga/pemikiran orisinal mahasiswa dari form konteks dan jawaban soal uji nalar mereka ke dalam inti tulisan. Tulisan harus terasa ditulis oleh seseorang yang benar-benar melakukan observasi nyata di lapangan, bukan hasil kompilasi internet.
+   - Gaya Tulisan: ${contextForm.style}
+   - Sudut Pandang/Keresahan Pribadi: ${contextForm.perspective}
+   - Contoh Nyata/Lokal: ${contextForm.localExample}
+   - Soal Uji Nalar Diberikan: ${socraticQuestion}
+   - Jawaban Logika Mahasiswa: ${socraticAnswer}
+
+2. **Gunakan Struktur Non-Linear (Aliran Alami)**:
+   Jangan gunakan template AI yang kaku (DILARANG Keras menyertakan sub-judul template robotik seperti "Pendahuluan", "Analisis", "Kesimpulan", atau "Faktor-Faktor" kecuali diminta secara eksplisit). Biarkan paragraf mengalir menggunakan kalimat transisi alami manusia (misal: "Namun, kalau kita bedah lebih dalam...", "Menariknya, fenomena ini justru...", "Dari sini kita bisa melihat bahwa...").
+
+3. **Variasi Panjang Kalimat (Burstiness & Ritme Acak)**:
+   Tulis dengan ritme tulisan manusia asli yang dinamis. Campurkan kalimat-kalimat panjang yang kompleks dan analitis dengan kalimat-kalimat pendek yang tegas, lugas, dan langsung menyentuh sasaran.
+
+4. **Hindari Mutlak "Kata Kunci AI"**:
+   DILARANG keras menggunakan kata-kata klise robotik AI seperti:
+   - "Penting untuk diingat"
+   - "Secara keseluruhan"
+   - "Dalam era digital ini"
+   - "Signifikan"
+   - "Menakjubkan"
+   - "Ranah"
+   Ganti seluruh kosakata tersebut dengan kata sehari-hari yang biasa digunakan mahasiswa dalam diskusi ilmiah yang luwes dan cerdas.
+
+5. **Anti-Kesimpulan Sempurna**:
+   DILARANG menutup tulisan dengan kesimpulan moral anak pramuka yang normatif, membosankan, dan klise. Akhiri paragraf penutup dengan pernyataan reflektif yang tajam, pertanyaan terbuka yang memancing pemikiran lebih lanjut, atau penegasan argumen utama yang kuat secara persuasif.
+
+6. **Format & Informasi Identitas (Khusus Tipe Tugas)**:
+   - Jika ini adalah Tugas Resmi, diawali dengan header informasi mahasiswa berikut di baris paling atas teks EXACTLY seperti format ini:
+   ${title}
+   Nama: ${name}
+   NIM: ${nim}
+   Prodi: ${prodi}
+   
+   - Jika ini adalah Diskusi Forum, DILARANG mencantumkan header identitas formal di atas. Dan tulis langsung jawabannya tanpa kata pembuka basa-basi robotik (seperti "Berikut adalah jawaban saya:"). Jika topik meminta tabel, buatlah dengan ASCII Table biasa secara rapi.
+   
+   - DILARANG menggunakan format Markdown tebal yang berlebihan (asterisks **), buatlah tulisan bersih mengalir tanpa hiasan tebal/miring.
+`;
+
+        const prompt = `
+${systemInstruction}
+
+Konteks Sesi Kuliah & Materi Akademis:
+${sessionContext}
+
+Pertanyaan / Instruksi Tugas Asli:
+${task.description || task.title}
+
+${pdfAttachments && pdfAttachments.length > 0 ? `BACA DAN ANALISIS FILE PDF LAMPIRAN TUGAS BERIKUT UNTUK MENJAWAB PERTANYAAN SECARA MENDALAM.` : ''}
+`.trim();
+
+        // Formulate request parts
+        const parts = [];
+        if (pdfAttachments && pdfAttachments.length > 0) {
+            for (const pdf of pdfAttachments) {
+                parts.push({
+                    inlineData: {
+                        mimeType: 'application/pdf',
+                        data: pdf.base64
+                    }
+                });
+            }
+        }
+        parts.push({ text: prompt });
+
+        try {
+            const res = await generateWithModelFallback(parts, {
+                temperature: isTugas ? 0.4 : 0.65 // Slightly higher temperature for organic variety, while preserving logic
+            });
+
+            let draftText = res.text;
+            const tokenCount = res.tokenCount || 4500;
+
+            if (draftText) {
+                // Post-process regex filter to guarantee a 100% natural, markdown-free output
+                draftText = draftText
+                    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove markdown bold **
+                    .replace(/\*(.*?)\*/g, '$1')     // Remove markdown italics *
+                    .replace(/_(.*?)_/g, '$1')       // Remove markdown italics _
+                    .replace(/^\s*\*\s+/gm, '- ')   // Convert markdown list bullet * to simple hyphen -
+                    .replace(/`([^`]+)`/g, '$1')     // Remove inline code ticks
+                    .replace(/sitesmile/gi, 'site:')
+                    .replace(/filetypesmile/gi, 'filetype:')
+                    .replace(/site:\s*\)/gi, 'site: )')
+                    .replace(/filetype:\s*\)/gi, 'filetype: )');
+            }
+
+            return { text: draftText, tokenCount };
+        } catch (err) {
+            console.error('[Gemini Service] generateHumanizedTaskDraft failed completely:', err.message);
+            return { text: 'Sistem AI sibuk. Gagal membuat draf tugas.', tokenCount: 0 };
+        }
+    }
 }
 
 module.exports = GeminiService;

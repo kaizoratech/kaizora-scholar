@@ -107,6 +107,10 @@ async function initializeDatabase() {
                 deadline TIMESTAMP WITH TIME ZONE,
                 status VARCHAR(50) DEFAULT 'pending' NOT NULL,
                 ai_draft_answer TEXT,
+                ai_session_state VARCHAR(50) DEFAULT 'idle' NOT NULL,
+                ai_context_form TEXT,
+                ai_socratic_question TEXT,
+                ai_socratic_answer TEXT,
                 completion_url TEXT,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
                 CONSTRAINT session_task_title_unique UNIQUE (session_id, title)
@@ -129,6 +133,10 @@ async function initializeDatabase() {
         // Run direct incremental DDL migrations to safely upgrade existing client tables
         await client.query('ALTER TABLE materials ADD COLUMN IF NOT EXISTS completion_url TEXT');
         await client.query('ALTER TABLE tasks ADD COLUMN IF NOT EXISTS completion_url TEXT');
+        await client.query("ALTER TABLE tasks ADD COLUMN IF NOT EXISTS ai_session_state VARCHAR(50) DEFAULT 'idle' NOT NULL");
+        await client.query('ALTER TABLE tasks ADD COLUMN IF NOT EXISTS ai_context_form TEXT');
+        await client.query('ALTER TABLE tasks ADD COLUMN IF NOT EXISTS ai_socratic_question TEXT');
+        await client.query('ALTER TABLE tasks ADD COLUMN IF NOT EXISTS ai_socratic_answer TEXT');
         await client.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS package_type VARCHAR(50) DEFAULT 'free' NOT NULL");
         await client.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS tokens_used INTEGER DEFAULT 0 NOT NULL');
         await client.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS tokens_max INTEGER DEFAULT 10000 NOT NULL');

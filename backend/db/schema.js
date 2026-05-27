@@ -70,6 +70,10 @@ const tasks = pgTable('tasks', {
     deadline: timestamp('deadline'),
     status: varchar('status', { length: 50 }).default('pending').notNull(), // 'pending', 'drafted', 'submitted'
     aiDraftAnswer: text('ai_draft_answer'),
+    aiSessionState: varchar('ai_session_state', { length: 50 }).default('idle').notNull(), // 'idle', 'interrogation', 'activation', 'evaluated'
+    aiContextForm: text('ai_context_form'), // stores stringified JSON
+    aiSocraticQuestion: text('ai_socratic_question'),
+    aiSocraticAnswer: text('ai_socratic_answer'),
     completionUrl: text('completion_url'),
     createdAt: timestamp('created_at').defaultNow().notNull()
 }, (table) => {
